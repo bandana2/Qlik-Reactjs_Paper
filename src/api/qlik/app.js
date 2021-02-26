@@ -1,4 +1,6 @@
 import { qdtEnigma } from 'qdt-components';
+import objectsMap from 'objectsMap.js'
+
 const deployOptions = window.location.hostname === 'localhost' ? 'react' : 'qlik';
 
 const config = {
@@ -6,7 +8,7 @@ const config = {
   secure: deployOptions === 'react' ? false : window.location.protocol === 'https:',
   port: deployOptions === 'react' ? 4848 : window.location.port,
   prefix: '',
-  appId: 'eed5154a-5446-4179-a19f-02b0bc0c944d', // DOMM
+  appId: objectsMap.apps.DOMM.appName ,  // DOMM 'c099dbc0-22cf-4b48-a72e-231c211a5a7f'
 };
 
 const appPromise = qdtEnigma(config);

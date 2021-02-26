@@ -3957,7 +3957,7 @@ License - nucleoapp.com/license/
       margin-bottom: 0; }
     .card-stats .card-body .numbers .card-category {
       color: #9A9A9A;
-      font-size: 16px;
+      font-size:8px;
       line-height: 1.4em; }
 
 .card-stats .card-footer {
@@ -4805,5 +4805,8 @@ License - nucleoapp.com/license/
 
 *, *:focus, a, a:focus {
   outline: none; }
-
+  /* .col-md-2 {
+    flex: 0 0 0%;
+    padding-right: 5px;
+  } */
 /*# sourceMappingURL=paper-dashboard.css.map */

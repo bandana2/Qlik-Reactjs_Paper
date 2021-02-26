@@ -10,9 +10,7 @@ const Filter = ({
     (async () => {
       const cApp = await cAppPromise;
 
-      cApp.getObjectProperties(id).then(function(model){
-        console.log(model.properties.layers)
-      });	
+     
       if (id) {
         QdtViz({
           element: filterRef.current,

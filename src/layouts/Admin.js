@@ -44,6 +44,7 @@ class Dashboard extends React.Component {
       ps = new PerfectScrollbar(this.mainPanel.current);
       document.body.classList.toggle("perfect-scrollbar-on");
     }
+
   }
   componentWillUnmount() {
     if (navigator.platform.indexOf("Win") > -1) {
@@ -63,7 +64,9 @@ class Dashboard extends React.Component {
   handleBgClick = (color) => {
     this.setState({ backgroundColor: color });
   };
+
   render() {
+    
     return (
       <div className="wrapper">
         <Sidebar
@@ -76,6 +79,7 @@ class Dashboard extends React.Component {
           <DemoNavbar {...this.props} />
           <Switch>
             {routes.map((prop, key) => {
+                  console.log(prop.layout + prop.path)
               return (
                 <Route
                   path={prop.layout + prop.path}

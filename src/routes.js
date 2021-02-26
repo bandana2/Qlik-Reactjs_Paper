@@ -34,7 +34,7 @@ var routes = [
     layout: "/admin",
   },
   {
-    path: "/icons/:application",
+    path: "/icons",
     name: "Dynamic Search",
     icon: "nc-icon nc-zoom-split",
     component: Icons,

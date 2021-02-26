@@ -17,6 +17,7 @@
 
 */
 import React, { useEffect, useRef, useState, Fragment } from "react";
+import {Link} from 'react-router-dom'
 import {
   qdtCompose,
   QdtPicasso,
@@ -28,7 +29,11 @@ import {
 
 import cAppPromise from "api/qlik/cApp.js";
 import appPromise from "api/qlik/app.js";
-import Filter from "components/Qlik/Filter.js";
+import Filter from "components/Qlik/Filter";
+import filterContent from 'components/Qlik/filterContent'
+import filterContent1 from 'components/Qlik/filterContent1'
+import FilterComponent from 'components/Qlik/FilterComponent'
+
 // react plugin used to create charts
 import { Line, Pie } from "react-chartjs-2";
 // reactstrap components
@@ -52,56 +57,46 @@ import {
 import Icons from "./Icons - Copy";
 
 const Dashboard = () => {
+ const [mydata,setMydata] = useState({});
+//  filterContent1('aMzZXp');
+//  filterContent('aMzZXp')
+// useEffect(() => {
+//   filterContent('aMzZXp').then((myres)=>console.log(myres)).catch(err=>console.log(err));
 
+// }, []);
 
+// console.log(`mydata: ${JSON.stringify(mydata)}`);
 
   return (
+    
     <Fragment>
       <div className="content">
-      <Filter
-                          cAppPromise={cAppPromise}
-                          id="aMzZXp"
-                          options={{ height: 100}}
-                          styles ={{height: 100, width:240}}
-                        />
+      {/* <Filter cAppPromise={cAppPromise} id="aMzZXp" options={{ height: 100 }} /> */}
         <Row>
           <Col lg="3" md="6" sm="6">
-            <Card className="card-stats">
-              <CardBody>
-                <Row>
-                  <Col md="4" xs="5">
-                    <div className="icon-big text-center icon-warning">
-                      <i className="nc-icon nc-globe text-warning" />
-                    </div>
-                  </Col>
+          <FilterComponent cAppPromise={cAppPromise} id="aMzZXp" classname='nc-icon nc-globe text-warning'>
 
-                  <Col md="8" xs="7">
-                    <div className="numbers">
-                      {/* <p className="card-category">Capacity</p> */}
-                      <CardTitle tag="p">
-                        <Filter
-                          cAppPromise={cAppPromise}
-                          id="aMzZXp"
-                          options={{ height: 100}}
-                          styles ={{height: 500, width:500}}
-                        />
-                      </CardTitle>
-                      {/* <p>
-                        <Filter cAppPromise={cAppPromise} id="aMzZXp" options={{ height: 100 }} />
-                        </p> */}
-                    </div>
-                  </Col>
-                </Row>
-              </CardBody>
-              <CardFooter>
-                <hr />
-                <div className="stats">
-                  <i className="fas fa-sync-alt" /> Refreshed on 11th Dec 20
-                </div>
-              </CardFooter>
-            </Card>
+          </FilterComponent>
           </Col>
-          
+          <Col lg="3" md="6" sm="6">
+          <FilterComponent cAppPromise={cAppPromise} id="UGsKPy" classname='nc-icon nc-bullet-list-67 text-success' >
+
+          </FilterComponent>
+          </Col>
+          <Col lg="3" md="6" sm="6">
+      
+          <FilterComponent cAppPromise={cAppPromise} id="pnqCC" classname='nc-icon nc-single-copy-04 text-warning'>
+
+          </FilterComponent>
+          </Col>
+
+          <Col lg="3" md="6" sm="6">
+      
+          <FilterComponent cAppPromise={cAppPromise} id="mBQHcP"  classname='nc-icon nc-paper text-primary'>
+
+          </FilterComponent>
+          </Col>
+
         </Row>
         <br/><hr/><br/>
         <Row>
@@ -113,11 +108,13 @@ const Dashboard = () => {
                 <p className="card-text">
                  Dynamically search for required metrics and get them in fingertips
                 </p>
-                <a href="#" className="btn btn-primary">
+                {/* <a href="#" className="btn btn-primary"> </a>*/}  
                 
-                  {/* <Link to ={'/icons/:DOMM'}/> */}
-                  Go DOMM
-                </a>
+                 <Link className="btn btn-primary"
+                 to="/admin/icons?app=DOMM"
+                >GO DOMM</Link>
+               
+              
               </div>
             </div>
           </Col>
@@ -129,9 +126,9 @@ const Dashboard = () => {
                 <p className="card-text">
                 Dynamically search for required metrics and get them in fingertips
                 </p>
-                <a href="#" className="btn btn-primary">
-                  Go UVP
-                </a>
+                <Link className="btn btn-primary"
+                 to="/admin/icons?app=UVP"
+                >GO UVP</Link>
               </div>
             </div>
           </Col>
@@ -143,9 +140,9 @@ const Dashboard = () => {
                 <p className="card-text">
                 Dynamically search for required metrics and get them in fingertips
                 </p>
-                <a href="#" className="btn btn-primary">
-                  Go GDOLT
-                </a>
+                <Link className="btn btn-primary"
+                 to="/admin/icons?app=GDO LT"
+                >GO GDO LT</Link>
               </div>
             </div>
           </Col>
@@ -157,9 +154,9 @@ const Dashboard = () => {
                 <p className="card-text">
                 Dynamically search for required metrics and get them in fingertips
                 </p>
-                <a href="#" className="btn btn-primary">
-                  Go RDI
-                </a>
+                <Link className="btn btn-primary"
+                 to="/admin/icons?app=RDI"
+                >GO RDI</Link>
               </div>
             </div>
           </Col>

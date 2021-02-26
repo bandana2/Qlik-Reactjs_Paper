@@ -27,13 +27,14 @@ import "assets/demo/demo.css";
 import "perfect-scrollbar/css/perfect-scrollbar.css";
 
 import AdminLayout from "layouts/Admin.js";
-
+import Icons from 'views/Icons.js'
 const hist = createBrowserHistory();
 
 ReactDOM.render(
   <Router history={hist}>
     <Switch>
       <Route path="/admin" render={(props) => <AdminLayout {...props} />} />
+      <Route path ='/admin/icons/:app' render={(props) => <Icons {...props} />} />
       <Redirect to="/admin/dashboard" />
     </Switch>
   </Router>,
