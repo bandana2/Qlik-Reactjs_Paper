@@ -63,68 +63,61 @@ const Icons = props => {
   const {
     location: { search }
   } = props;
-  console.log(search.split("=")[1]);
+  // console.log(search.split("=")[1]?search.split("=")[1]:'notselected');
   const [singleSelections, setSingleSelections] = useState();
   // const [multiSelections, setMultiSelections] = useState([]);
   const [currentValue, setCurrentValue] = useState('');
   const [filterBy, setFilterBy] = useState("callback");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const toggle = () => setDropdownOpen(prevState => !prevState);
-  const [lastClicked, setLastClicked] = useState([search.split("=")[1]]);
+  const [lastClicked, setLastClicked] = useState(search.split("=")[1]);
+  const [loading, setLoading] = useState(false);
 
   const filterByCallback = (option, props) => {
-    // option.capital.toLowerCase().indexOf(props.text.toLowerCase()) !== -1 ||
-    // option.name.toLowerCase().indexOf(props.text.toLowerCase()) !== -1
-
+    
     var lowercaseQuery = props.text.toLowerCase();
     var words = lowercaseQuery.split(" ");
 
     var regex = words.map(word => "(?=.*" + word + ")").join("");
     var searchExp = new RegExp(regex, "i");
-    //  console.log(props.text.toLowerCase().split(' ').map((item)=>option.capital.toLowerCase().indexOf(item))!==-1)
+   
     return searchExp.test(option.query) || searchExp.test(option.lf);
   };
  let objectRequested=''
   let passApp=''
   const filterByFields = ["capital", "name"];
-  console.log(singleSelections? 'true':'false')
+  
   const handleClick = e => {
+   
+    console.log(lastClicked)
+    console.log(`isNaN:${isNaN(singleSelections)}`)
+    if (singleSelections==="" || singleSelections===undefined || isNaN(singleSelections)===false ){
+      console.log(`singleSelectionsIF:${singleSelections}`)
+    }else {
+      console.log(`singleSelectionsELF:${singleSelections}`)
+      setCurrentValue(objectsMap.apps.DOMM.qvobjects[singleSelections[0].query])
+  
+    }
+   
 
-    console.log(lastClicked[0])
-    setCurrentValue(objectsMap.apps.DOMM.qvobjects[singleSelections[0].query])
-    // console.log(currentValue)
-    // console.log(singleSelections[0].query);
-    // console.log(objectsMap.apps.DOMM.qvobjects[singleSelections[0].query])
-    // console.log((a==`objectsMap.apps.${lastClicked}.qvobjects[${singleSelections[0].query}]`)=>(`objectsMap.apps.${lastClicked}.qvobjects[${singleSelections[0].query}]`)())
-// if (lastClicked[0]==='DOMM'){
-//   // let abc=objectsMap.apps.DOMM.qvobjects[singleSelections[0].query]
-//   console.log('entered the domm')
-//   // console.log(objectsMap.apps.DOMM.qvobjects[singleSelections[0].query])
-//   // setCurrentValue(objectsMap.apps.DOMM.qvobjects[singleSelections[0].query])
-//   // console.log(async ()=>{console.log(await currentValue)})
-//   // setCurrentValue(async (state) => {
-//   //   console.log(state); // "React is awesome!"
-//   //    objectRequested= await state;
-//   //  return state;
-//   // });
-//   console.log( objectRequested)
-//   objectRequested=objectsMap.apps.DOMM.qvobjects[singleSelections[0].query]
-//   console.log(objectRequested)
-//   passApp=cAppPromise;
-// }else if(lastClicked[0]==='UVP'){
-//   objectRequested=objectsMap.apps.UVP.qvobjects[singleSelections[0].query]
-//   passApp=cAppPromise1;
-// }else if(lastClicked[0]==='GDO LT'){
+if (lastClicked==='DOMM'){
+  passApp=cAppPromise;
 
-// }else {
+}else if(lastClicked==='UVP'){
+  passApp=cAppPromise1;
 
-// }
+}else if(lastClicked==='GDO LT'){
 
+}else {
 
-// console.log(objectToRetrive)
+}
+console.log()
+console.log(objectsMap.apps.[lastClicked].qvobjects[singleSelections[0].query])
     MyComp = ({options})=> (
-      // <Filter cAppPromise={cAppPromise} id="DGFsh"  />
-        <Filter cAppPromise={cAppPromise} id={objectsMap.apps.DOMM.qvobjects[singleSelections[0].query]} options={options} />
+   
+     
+ <Filter cAppPromise={passApp} id={objectsMap.apps.[lastClicked].qvobjects[singleSelections[0].query]} options={options} />
+        
         )
   };
 
@@ -133,11 +126,6 @@ const Icons = props => {
    
   };
 
-  // useEffect(() => {
-      
-  //   // setCurrentValue(singleSelections)
-
-  //   }, [objectRequested]);
 
   return (
     <>
@@ -168,8 +156,7 @@ const Icons = props => {
           <Col md="10">
             <form>
               <InputGroup>
-                {/* <Input placeholder="Search..." onChange={updateValues}/> */}
-
+              
                 <Typeahead
                   filterBy={filterByCallback}
                   id="custom-filtering-example"
@@ -189,9 +176,12 @@ const Icons = props => {
                 />
 
                 <InputGroupAddon addonType="append">
-                  <InputGroupText onClick={handleClick}>
+                  {(singleSelections==="" || singleSelections===undefined || isNaN(singleSelections)===false)?( <InputGroupText >
                     <i className="nc-icon nc-zoom-split" />
-                  </InputGroupText>
+                  </InputGroupText>):( <InputGroupText onClick={handleClick} >
+                    <i className="nc-icon nc-zoom-split" />
+                  </InputGroupText>)}
+                 
                 </InputGroupAddon>
               </InputGroup>
             </form>
@@ -206,12 +196,17 @@ const Icons = props => {
               <hr style={{height:1,marginBottom:0}}/>
               <CardBody>
               {/* {currentValue} */}
-              <Filter cAppPromise={cAppPromise} id="CurrentSelections"  options={{ height: 50 }} />
-              <MyComp options={{ height: 300 }}/>
-              {/* <Filter cAppPromise={cAppPromise} id={currentValue}  /> */}
-            
+              {loading?(<div>Loading</div>):(<>
+<div>{lastClicked} {(singleSelections==="" || singleSelections===undefined || isNaN(singleSelections)===false)?'':objectsMap.apps.[lastClicked].qvobjects[singleSelections[0].query] }</div>
+
+                <div>
+                <Filter cAppPromise={cAppPromise} id="CurrentSelections"  options={{ height: 50 }} />
+                <MyComp options={{ height: 300 }}/></div></>
+              )}
+              
+             
               </CardBody>
-              {/* <CardFooter>Footer</CardFooter> */}
+              
             </Card>
           </Col>
         </Row>
