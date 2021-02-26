@@ -1,23 +1,6 @@
-/*!
-
-=========================================================
-* Paper Dashboard React - v1.2.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/paper-dashboard-react
-* Copyright 2020 Creative Tim (https://www.creative-tim.com)
-
-* Licensed under MIT (https://github.com/creativetimofficial/paper-dashboard-react/blob/master/LICENSE.md)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
-import React, { useState,useEffect } from "react";
+import React, { useState,useEffect,useRef } from "react";
 import { useParams } from "react-router-dom";
+import { QdtViz } from 'qdt-components';
 
 import {
   qdtCompose,
@@ -53,165 +36,186 @@ import {
   DropdownItem
 } from "reactstrap";
 import { Typeahead } from "react-bootstrap-typeahead";
-import options from "../data";
+import optionsData from "../data";
 import { exportDefaultSpecifier } from "@babel/types";
 import { ConsoleWriter } from "istanbul-lib-report";
-var MyComp = () => {
-  return <div></div>;
-};
+
 const Icons = props => {
   const {
     location: { search }
   } = props;
-  // console.log(search.split("=")[1]?search.split("=")[1]:'notselected');
+ 
+  const filterRef = useRef(null);
+  const filterRef1=useRef(null);
   const [singleSelections, setSingleSelections] = useState();
-  // const [multiSelections, setMultiSelections] = useState([]);
-  const [currentValue, setCurrentValue] = useState('');
-  const [filterBy, setFilterBy] = useState("callback");
+  const [id, setID] = useState('');
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const toggle = () => setDropdownOpen(prevState => !prevState);
   const [lastClicked, setLastClicked] = useState(search.split("=")[1]);
   const [loading, setLoading] = useState(false);
+  // const myRef = useRef(null);
+ let passApp='';
+ let id1='CurrentSelections'
+  console.log(`in filter: ${id}`)
+  console.log(`in filter: ${cAppPromise}`)
+  // const [loading, setLoading] = useState(true);
 
-  const filterByCallback = (option, props) => {
-    
-    var lowercaseQuery = props.text.toLowerCase();
-    var words = lowercaseQuery.split(" ");
-
-    var regex = words.map(word => "(?=.*" + word + ")").join("");
-    var searchExp = new RegExp(regex, "i");
-   
-    return searchExp.test(option.query) || searchExp.test(option.lf);
-  };
- let objectRequested=''
-  let passApp=''
-  const filterByFields = ["capital", "name"];
+let options, styles
+const handleClick=()=>{
+  console.log('lastclicked',lastClicked)
+  console.log(objectsMap.apps.[lastClicked].qvobjects[singleSelections[0].query])
+  setID(objectsMap.apps.[lastClicked].qvobjects[singleSelections[0].query]);
+  console.log(lastClicked,id)
+  if (lastClicked==='DOMM'){
+    passApp=cAppPromise;
   
-  const handleClick = e => {
-   
-    console.log(lastClicked)
-    console.log(`isNaN:${isNaN(singleSelections)}`)
-    if (singleSelections==="" || singleSelections===undefined || isNaN(singleSelections)===false ){
-      console.log(`singleSelectionsIF:${singleSelections}`)
-    }else {
-      console.log(`singleSelectionsELF:${singleSelections}`)
-      setCurrentValue(objectsMap.apps.DOMM.qvobjects[singleSelections[0].query])
+  }else if(lastClicked==='UVP'){
+    passApp=cAppPromise1;
   
-    }
-   
-
-if (lastClicked==='DOMM'){
-  passApp=cAppPromise;
-
-}else if(lastClicked==='UVP'){
-  passApp=cAppPromise1;
-
-}else if(lastClicked==='GDO LT'){
-
-}else {
-
+  }else if(lastClicked==='GDO LT'){
+  
+  }else {
+  
+  }
 }
-console.log()
-console.log(objectsMap.apps.[lastClicked].qvobjects[singleSelections[0].query])
-    MyComp = ({options})=> (
+
+
+
+const filterByCallback = (option, props) => {
+    
+  var lowercaseQuery = props.text.toLowerCase();
+  var words = lowercaseQuery.split(" ");
+
+  var regex = words.map(word => "(?=.*" + word + ")").join("");
+  var searchExp = new RegExp(regex, "i");
+ 
+  return searchExp.test(option.query) || searchExp.test(option.lf);
+};
+
+const changeDropDown = e => {
+  setLastClicked(e);
+ 
+ 
+};
+
+
+useEffect(() => {
+  (async () => {
+
+    if (lastClicked==='DOMM'){
+      passApp=cAppPromise;
+    
+    }else if(lastClicked==='UVP'){
+      passApp=cAppPromise1;
+    
+    }else if(lastClicked==='GDO LT'){
+    
+    }else {
+    
+    }
+
+    console.log(passApp)
+    const cApp = await passApp;
    
-     
- <Filter cAppPromise={passApp} id={objectsMap.apps.[lastClicked].qvobjects[singleSelections[0].query]} options={options} />
-        
-        )
-  };
-
-  const changeDropDown = e => {
-    setLastClicked(e);
    
-  };
+    if (id) {
+      QdtViz({
+        element: filterRef.current,
+        app: cApp,
+        options: { id,height:350},
+      });
+    }
 
+    if (id1) {
+      QdtViz({
+        element: filterRef1.current,
+        app: cApp,
+        options: { id:id1,height:30 },
+      });
+    }
 
+  })();
+}, [id]);
+// console.log(filterRef)
   return (
+
     <>
-      <div className="content">
-        <Row>
-          <Col md="2" style={{paddingRight:5,flex:0}}>
-            <div>
-              <Dropdown isOpen={dropdownOpen} toggle={toggle}>
-                <DropdownToggle caret>{lastClicked}</DropdownToggle>
-                <DropdownMenu container="body">
-                  <DropdownItem onClick={() => changeDropDown("DOMM")}>
-                    DO MM
-                  </DropdownItem>
-                  <DropdownItem onClick={() => changeDropDown("UVP")}>
-                    UVP
-                  </DropdownItem>
-                  <DropdownItem onClick={() => changeDropDown("GDO LT")}>
-                    GDO LT
-                  </DropdownItem>
-                  <DropdownItem onClick={() => changeDropDown("RDI")}>
-                    RDI
-                  </DropdownItem>
-                </DropdownMenu>
-              </Dropdown>
-            </div>
-          </Col>
+    <div className="content">
+      <Row>
+        <Col md="2" style={{paddingRight:5,flex:0}}>
+          <div>
+            <Dropdown isOpen={dropdownOpen} toggle={toggle}>
+              <DropdownToggle caret>{lastClicked}</DropdownToggle>
+              <DropdownMenu container="body">
+                <DropdownItem onClick={() => changeDropDown("DOMM")}>
+                  DO MM
+                </DropdownItem>
+                <DropdownItem onClick={() => changeDropDown("UVP")}>
+                  UVP
+                </DropdownItem>
+                <DropdownItem onClick={() => changeDropDown("GDO LT")}>
+                  GDO LT
+                </DropdownItem>
+                <DropdownItem onClick={() => changeDropDown("RDI")}>
+                  RDI
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          </div>
+        </Col>
 
-          <Col md="10">
-            <form>
-              <InputGroup>
-              
-                <Typeahead
-                  filterBy={filterByCallback}
-                  id="custom-filtering-example"
-                  labelKey="query"
-                  options={options}
-                  placeholder="Filter by state name or capital..."
-                  onChange={setSingleSelections}
-                  selected={singleSelections}
-                  renderMenuItemChildren={option => (
+        <Col md="10">
+          <form>
+            <InputGroup>
+            
+              <Typeahead
+                filterBy={filterByCallback}
+                id="custom-filtering-example"
+                labelKey="query"
+                options={optionsData}
+                placeholder="Filter by state name or capital..."
+                onChange={setSingleSelections}
+                selected={singleSelections}
+                renderMenuItemChildren={option => (
+                  <div>
+                    {option.query}
                     <div>
-                      {option.query}
-                      <div>
-                        <small>Line Function: {option.lf}</small>
-                      </div>
+                      <small>Line Function: {option.lf}</small>
                     </div>
-                  )}
-                />
+                  </div>
+                )}
+              />
 
-                <InputGroupAddon addonType="append">
-                  {(singleSelections==="" || singleSelections===undefined || isNaN(singleSelections)===false)?( <InputGroupText >
-                    <i className="nc-icon nc-zoom-split" />
-                  </InputGroupText>):( <InputGroupText onClick={handleClick} >
-                    <i className="nc-icon nc-zoom-split" />
-                  </InputGroupText>)}
-                 
-                </InputGroupAddon>
-              </InputGroup>
-            </form>
-          </Col>
-        </Row>
-        <Row>
-          <Col md="12">
-            <Card className="card-stats" style={{height:450}}>
-              <CardHeader style={{height:35}}>
-                <p className="text-info h3">Search Results</p>
-              </CardHeader>
-              <hr style={{height:1,marginBottom:0}}/>
-              <CardBody>
-              {/* {currentValue} */}
-              {loading?(<div>Loading</div>):(<>
-<div>{lastClicked} {(singleSelections==="" || singleSelections===undefined || isNaN(singleSelections)===false)?'':objectsMap.apps.[lastClicked].qvobjects[singleSelections[0].query] }</div>
+              <InputGroupAddon addonType="append">
+               <InputGroupText onClick={() =>handleClick()} >
+                  <i className="nc-icon nc-zoom-split" />
+                </InputGroupText>
+               
+              </InputGroupAddon>
+            </InputGroup>
+          </form>
+        </Col>
+      </Row>
+      <Row>
+        <Col md="12">
+          <Card className="card-stats" style={{height:450}}>
+            <CardHeader style={{height:35}}>
+              <p className="text-info h3">Search Results</p>
+            </CardHeader>
+            <hr style={{height:1,marginBottom:0}}/>
+            <CardBody>
+            <div ref={filterRef1} style={styles} />
+              <div ref={filterRef} style={styles} />
+         
+            </CardBody>
+            
+          </Card>
+        </Col>
+      </Row>
+    </div>
+  </>
 
-                <div>
-                <Filter cAppPromise={cAppPromise} id="CurrentSelections"  options={{ height: 50 }} />
-                <MyComp options={{ height: 300 }}/></div></>
-              )}
-              
-             
-              </CardBody>
-              
-            </Card>
-          </Col>
-        </Row>
-      </div>
-    </>
+    
   );
 };
 

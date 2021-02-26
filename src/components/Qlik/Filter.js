@@ -5,12 +5,14 @@ const Filter = ({
   id, cAppPromise, options, styles,
 }) => {
   const filterRef = useRef(null);
+  console.log(`in filter: ${id}`)
+  console.log(`in filter: ${cAppPromise}`)
   // const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
       const cApp = await cAppPromise;
-     console.log(`in filter: ${id}`)
+     
      
       if (id) {
         QdtViz({
