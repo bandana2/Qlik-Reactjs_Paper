@@ -1,6 +1,6 @@
 /* eslint-disable max-len, sort-keys */
 export default  [
-    { query: 'data availability quarterly trend', lf: 'DOMM' },
+    // { query: 'data availability quarterly trend', lf: 'DOMM' },
     { query: 'data availability split by phase', lf: 'DOMM'},
     { query: 'data availability split by du', lf: 'DOMM'},
     { query: 'data availability breakup', lf: 'DOMM'},

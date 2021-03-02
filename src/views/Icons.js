@@ -1,8 +1,9 @@
 import React, { useState,useEffect,useRef } from "react";
 import { useParams } from "react-router-dom";
-import { QdtViz } from 'qdt-components';
 
 import {
+  QdtViz,
+  QdtSelect,
   qdtCompose,
   QdtPicasso,
   useBarChartSettings,
@@ -12,7 +13,7 @@ import {
 } from "qdt-components";
 
 import cAppPromise,{cAppPromise1} from "api/qlik/cApp.js";
-import appPromise from "api/qlik/app.js";
+import appPromise,{appPromise1} from "api/qlik/app.js";
 import Filter from "components/Qlik/Filter.js";
 import objectsMap from 'objectsMap.js'
 // reactstrap components
@@ -33,7 +34,11 @@ import {
   Dropdown,
   DropdownToggle,
   DropdownMenu,
-  DropdownItem
+  DropdownItem,
+  Modal,
+  ModalHeader, 
+  ModalBody, 
+  ModalFooter
 } from "reactstrap";
 import { Typeahead } from "react-bootstrap-typeahead";
 import optionsData from "../data";
@@ -47,14 +52,27 @@ const Icons = props => {
  
   const filterRef = useRef(null);
   const filterRef1=useRef(null);
+  const filter1Element =useRef(null);
+  const clearButton = useRef(null);
+  // const clearButton1 = useRef(null);
   const [singleSelections, setSingleSelections] = useState();
+  const [userTypedValue,setUserTypedValue] = useState();
   const [id, setID] = useState('');
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const toggle = () => setDropdownOpen(prevState => !prevState);
   const [lastClicked, setLastClicked] = useState(search.split("=")[1]);
   const [loading, setLoading] = useState(false);
-  // const myRef = useRef(null);
+  const [modal, setModal] = useState(false);
+  const modelToggle = () => setModal(!modal);
+  let myChange = ''
+  const {
+    buttonLabel,
+    className
+  } = props;
+
+ 
  let passApp='';
+ let passEapp=''
  let id1='CurrentSelections'
   console.log(`in filter: ${id}`)
   console.log(`in filter: ${cAppPromise}`)
@@ -62,16 +80,18 @@ const Icons = props => {
 
 let options, styles
 const handleClick=()=>{
-  console.log('lastclicked',lastClicked)
-  console.log(objectsMap.apps.[lastClicked].qvobjects[singleSelections[0].query])
-  setID(objectsMap.apps.[lastClicked].qvobjects[singleSelections[0].query]);
+
+  // setLoading(true);
+  console.log('myChange',objectsMap.apps.[lastClicked].qvobjects[userTypedValue]);
+
+  setID(objectsMap.apps.[lastClicked].qvobjects[userTypedValue]);
   console.log(lastClicked,id)
   if (lastClicked==='DOMM'){
     passApp=cAppPromise;
-  
+    passEapp=appPromise;
   }else if(lastClicked==='UVP'){
     passApp=cAppPromise1;
-  
+    passEapp=appPromise1;
   }else if(lastClicked==='GDO LT'){
   
   }else {
@@ -79,7 +99,9 @@ const handleClick=()=>{
   }
 }
 
-
+const handleClickValidation=()=>{
+setModal(true)
+}
 
 const filterByCallback = (option, props) => {
     
@@ -94,9 +116,31 @@ const filterByCallback = (option, props) => {
 
 const changeDropDown = e => {
   setLastClicked(e);
+  setID(null);
  
  
 };
+const updateStateValue = (e,a) =>{
+  a==='change'?setSingleSelections(e):setSingleSelections([{'query':e,'lf': ""}])
+
+}
+
+const exportVisualData=()=>{
+  
+  passApp.then((qapp)=>{
+    
+    qapp.visualization.get(id).then((visual) => {
+      visual.exportData({ format: 'OOXML', state: 'A' })
+      
+      .then((result)=>{
+        window.open(`${visual.qapp.model.rpcOptions.isSecure?'https://':'http://'}${visual.qapp.model.rpcOptions.host}${visual.qapp.model.rpcOptions.port?":":''}${visual.qapp.model.rpcOptions.port}/Exports${result.split('/Exports')[1]}`);
+      })
+      .catch((err)=>{
+        console.log(err);
+      });
+    });
+  })
+}
 
 
 useEffect(() => {
@@ -104,26 +148,29 @@ useEffect(() => {
 
     if (lastClicked==='DOMM'){
       passApp=cAppPromise;
-    
+      passEapp=appPromise;
     }else if(lastClicked==='UVP'){
       passApp=cAppPromise1;
-    
+      passEapp=appPromise1;
     }else if(lastClicked==='GDO LT'){
     
     }else {
     
     }
 
-    console.log(passApp)
+    console.log('id',id)
     const cApp = await passApp;
-   
+   const eApp= await passEapp;
    
     if (id) {
       QdtViz({
         element: filterRef.current,
         app: cApp,
-        options: { id,height:350},
+        options: { id,height:350 },
       });
+
+   
+
     }
 
     if (id1) {
@@ -132,17 +179,34 @@ useEffect(() => {
         app: cApp,
         options: { id:id1,height:30 },
       });
+      
+    
     }
 
+    
+   if (id){ qdtCompose({
+      app:eApp, 
+      element: clearButton.current, 
+      component: QdtButton,
+      options: {
+        type: 'clearSelections',
+        label: 'Clear Selections',
+        
+      }
+    });
+  }
+
   })();
+  // setLoading(false);
 }, [id]);
-// console.log(filterRef)
+
   return (
 
     <>
     <div className="content">
       <Row>
         <Col md="2" style={{paddingRight:5,flex:0}}>
+      
           <div>
             <Dropdown isOpen={dropdownOpen} toggle={toggle}>
               <DropdownToggle caret>{lastClicked}</DropdownToggle>
@@ -174,8 +238,8 @@ useEffect(() => {
                 labelKey="query"
                 options={optionsData}
                 placeholder="Filter by state name or capital..."
-                onChange={setSingleSelections}
-                selected={singleSelections}
+                onChange={(e)=>e.length===0?setUserTypedValue(null):setUserTypedValue(e[0].query)}
+                onInputChange={(e)=>setUserTypedValue(e)}
                 renderMenuItemChildren={option => (
                   <div>
                     {option.query}
@@ -185,11 +249,28 @@ useEffect(() => {
                   </div>
                 )}
               />
-
+             
               <InputGroupAddon addonType="append">
-               <InputGroupText onClick={() =>handleClick()} >
+                {(userTypedValue ==="" || userTypedValue ===undefined || userTypedValue===null)
+                ?(  <InputGroupText onClick={() =>handleClickValidation()} >
+                <i className="nc-icon nc-zoom-split" />
+                <Modal isOpen={modal} modelToggle={toggle} className={className}>
+                <ModalHeader modelToggle={toggle}>Search Validation</ModalHeader>
+                <ModalBody>
+                 Please enter the text in search box and click on the search button. 
+                </ModalBody>
+                <ModalFooter>
+                  <Button color="secondary" onClick={modelToggle}>Cancel</Button>
+                </ModalFooter>
+              </Modal> 
+              </InputGroupText>
+             )
+              
+              
+              :(  <InputGroupText onClick={() =>handleClick()} >
                   <i className="nc-icon nc-zoom-split" />
-                </InputGroupText>
+                </InputGroupText>)}
+             
                
               </InputGroupAddon>
             </InputGroup>
@@ -200,18 +281,21 @@ useEffect(() => {
         <Col md="12">
           <Card className="card-stats" style={{height:450}}>
             <CardHeader style={{height:35}}>
-              <p className="text-info h3">Search Results</p>
+              <p className="text-info h3 float-left">Search Results  </p>
+              <p className="text-info h6 float-right"  ref={clearButton} ></p>
+              <p className="text-info h6 float-right"><Button onClick={exportVisualData} style={{marginRight:5,backgroundColor:'#00485b',color:'#fff'}}> Export</Button></p>
+             
             </CardHeader>
             <hr style={{height:1,marginBottom:0}}/>
             <CardBody>
-            <div ref={filterRef1} style={styles} />
-              <div ref={filterRef} style={styles} />
-         
+           <div ref={filterRef1} style={styles} /> 
+            <div ref={filterRef} style={styles} />
             </CardBody>
             
           </Card>
         </Col>
       </Row>
+      
     </div>
   </>
 

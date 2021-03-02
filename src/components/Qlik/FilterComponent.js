@@ -126,7 +126,7 @@ function FilterComponent({ id, cAppPromise, classname }) {
         <button
           className="btn btn-primary btn-sm float-left"
           id="left"
-          style={{ fontSize: 8, cursor: "default" }}
+          style={{ fontSize: 8 }}
         >
           {myfilter.head2019}
           {myfilter.v2019Val}
